@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card p-3 shadow-sm">
+            <form method="get" class="row g-3">
+                <div class="col-md-7">
+                    {{ form.q.label_tag }} {{ form.q }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.max_cooking_time.label_tag }} {{ form.max_cooking_time }}
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Искать</button>
+                </div>
+            </form>
+            <hr class="my-3">
+
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'recipe_list' %}" class="badge rounded-pill text-decoration-none px-3 py-2 bg-secondary fs-6">
+                    Все категории
+                </a>
+                {% for cat in categories %}
+                    <a href="?category={{ cat.id }}" class="badge rounded-pill text-decoration-none px-3 py-2 fs-6 {{ cat.color_class }}">
+                        {{ cat.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for recipe in recipes %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow border">
+                {% if recipe.image %}
+                    <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ recipe.title }}</h5>
+                    {% if recipe.category %}
+                        <div>
+                            <span class="badge rounded-pill px-3 py-1 fs-6 {{ recipe.category.color_class }} mb-2">
+                                {{ recipe.category.name }}
+                            </span>
+                        </div>
+                    {% endif %}
+                    <p class="card-text">{{ recipe.short_description }}</p>
+                    <div class="mt-auto">
+                        <p class="text-muted mb-2">⏱ Время: {{ recipe.cooking_time }} мин.</p>
+                        <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-outline-primary w-100">Смотреть рецепт</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <p class="text-center text-muted">Рецептов по вашему запросу не найдено.</p>
+        </div>
+    {% endfor %}
+</div>
+{% if page_obj.has_other_pages %}
+    <nav class="mt-4 mb-5">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">Назад</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Назад</span></li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">Вперед</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Вперед</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+{% endblock %}

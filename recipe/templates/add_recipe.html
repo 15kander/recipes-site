@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm p-4">
+            <h2 class="mb-4 text-center">Добавить новый рецепт</h2>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success w-100 mt-3">Сохранить рецепт</button>
+            </form>
+            
+            <div class="mt-3 text-center">
+                <a href="{% url 'recipe_list' %}" class="text-decoration-none">← На главную</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

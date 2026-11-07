@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Личный кабинет: {{ request.user.username }}</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow border p-3 mb-4">
+            <h4>❤️ Избранные рецепты</h4>
+            <ul class="list-group list-group-flush mt-2">
+                {% for fav in favorites %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'recipe_detail' fav.recipe.pk %}" class="text-decoration-none">{{ fav.recipe.title }}</a>
+                        <a href="{% url 'toggle_favorite' fav.recipe.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Список избранного пуст.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow border p-3 mb-4">
+            <h4>💬 Ваши отзывы</h4>
+            <ul class="list-group list-group-flush mt-2">
+                {% for com in comments %}
+                    <li class="list-group-item">
+                        <a href="{% url 'recipe_detail' com.recipe.pk %}" class="text-decoration-none"><strong>{{ com.recipe.title }}</strong></a>
+                        <span class="badge float-end shadow-sm px-2 py-1" style="background-color: #e1d1b6 !important; color: #444200 !important;">⭐ {{ com.rating }}</span>
+                        <p class="mb-0 text-muted small mt-1">{{ com.text }}</p>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Вы еще не оставляли отзывов.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
